@@ -14,11 +14,15 @@ export { PushStatus, PushIdentificator, PushQuery, PushConfiguration, PushParame
 
 export default class PushManager {
     public readonly endpoint: string;
-    public readonly ws: WebService;
+    public readonly webservice: WebService;
 
-    constructor(ws: WebService, endpoint: string = 'PUSH') {
-        this.ws = ws;
-        this.endpoint = endpoint;
+    constructor(webservice: WebService, endpoint?: string) {
+        this.webservice = webservice;
+        this.endpoint = endpoint || 'PUSH';
+    }
+
+    static fromKey(key: string, endpoint?: string) {
+        return new this(new WebService(key), endpoint);
     }
 
     async create(pushQuery: PushQuery, configuration: PushConfiguration = {}, label?: string) : Promise<PushIdentificator> {
@@ -32,7 +36,7 @@ export default class PushManager {
 
         PushManager.addParameter(form, label, 'pushLabel');
 
-        const response = await WebService.parse(this.ws.request(`INSERT INTO '${this.endpoint}'.'JOB'`, form));
+        const response = await WebService.parse(this.webservice.request(`INSERT INTO '${this.endpoint}'.'JOB'`, form));
         const id = <string> xpath.select('string(/BPQL/body/id)', response, true);
         if (!id) throw new PushManagerException('Push ID not received as a text');
 
@@ -97,7 +101,7 @@ export default class PushManager {
 
     async status(identificator: PushIdentificator) : Promise<PushStatus> {
         const form = PushManager.validateIdentificator(identificator);
-        const statusDocument = <Document> await WebService.parse(this.ws.request(`SELECT FROM '${this.endpoint}'.'JOB'`, form));
+        const statusDocument = <Document> await WebService.parse(this.webservice.request(`SELECT FROM '${this.endpoint}'.'JOB'`, form));
         const element = <Element> xpath.select('/BPQL/body/pushObject', statusDocument, true);
         if (!element) throw new PushManagerException('Not found');
 
@@ -131,7 +135,7 @@ export default class PushManager {
 
     async document(identificator: PushIdentificator): Promise<any> {
         const form = PushManager.validateIdentificator(identificator);
-        const response = await WebService.parse(this.ws.request(`SELECT FROM '${this.endpoint}'.'DOCUMENT'`, form));
+        const response = await WebService.parse(this.webservice.request(`SELECT FROM '${this.endpoint}'.'DOCUMENT'`, form));
         if (get(response, 'constructor.name') === 'Document') {
             WebService.throwException(response);
         }
@@ -140,7 +144,7 @@ export default class PushManager {
 
     async delete(identificator: PushIdentificator): Promise<void> {
         const form = PushManager.validateIdentificator(identificator);
-        await this.ws.request(`DELETE FROM '${this.endpoint}'.'JOB'`, form);
+        await this.webservice.request(`DELETE FROM '${this.endpoint}'.'JOB'`, form);
     }
 
 }
