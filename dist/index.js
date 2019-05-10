@@ -6044,11 +6044,13 @@ var PushManagerException = /** @class */ (function (_super) {
 }(Error));
 
 var PushManager = /** @class */ (function () {
-    function PushManager(ws, endpoint) {
-        if (endpoint === void 0) { endpoint = 'PUSH'; }
-        this.ws = ws;
-        this.endpoint = endpoint;
+    function PushManager(webservice, endpoint) {
+        this.webservice = webservice;
+        this.endpoint = endpoint || 'PUSH';
     }
+    PushManager.fromKey = function (key, endpoint) {
+        return new this(new WebService(key), endpoint);
+    };
     PushManager.prototype.create = function (pushQuery, configuration, label) {
         if (configuration === void 0) { configuration = {}; }
         return __awaiter(this, void 0, void 0, function () {
@@ -6059,7 +6061,7 @@ var PushManager = /** @class */ (function () {
                         target = pushQuery.target, parameters = pushQuery.parameters;
                         form = __assign({}, parameters, PushManager.translateConfiguration(configuration), { pushQuery: target });
                         PushManager.addParameter(form, label, 'pushLabel');
-                        return [4 /*yield*/, WebService.parse(this.ws.request("INSERT INTO '" + this.endpoint + "'.'JOB'", form))];
+                        return [4 /*yield*/, WebService.parse(this.webservice.request("INSERT INTO '" + this.endpoint + "'.'JOB'", form))];
                     case 1:
                         response = _a.sent();
                         id = xpath_1.select('string(/BPQL/body/id)', response, true);
@@ -6129,7 +6131,7 @@ var PushManager = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         form = PushManager.validateIdentificator(identificator);
-                        return [4 /*yield*/, WebService.parse(this.ws.request("SELECT FROM '" + this.endpoint + "'.'JOB'", form))];
+                        return [4 /*yield*/, WebService.parse(this.webservice.request("SELECT FROM '" + this.endpoint + "'.'JOB'", form))];
                     case 1:
                         statusDocument = _a.sent();
                         element = xpath_1.select('/BPQL/body/pushObject', statusDocument, true);
@@ -6170,7 +6172,7 @@ var PushManager = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         form = PushManager.validateIdentificator(identificator);
-                        return [4 /*yield*/, WebService.parse(this.ws.request("SELECT FROM '" + this.endpoint + "'.'DOCUMENT'", form))];
+                        return [4 /*yield*/, WebService.parse(this.webservice.request("SELECT FROM '" + this.endpoint + "'.'DOCUMENT'", form))];
                     case 1:
                         response = _a.sent();
                         if (get_1(response, 'constructor.name') === 'Document') {
@@ -6188,7 +6190,7 @@ var PushManager = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         form = PushManager.validateIdentificator(identificator);
-                        return [4 /*yield*/, this.ws.request("DELETE FROM '" + this.endpoint + "'.'JOB'", form)];
+                        return [4 /*yield*/, this.webservice.request("DELETE FROM '" + this.endpoint + "'.'JOB'", form)];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];

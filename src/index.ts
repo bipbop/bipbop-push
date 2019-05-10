@@ -10,8 +10,6 @@ import { PushIdentificator } from './types/push-identificator';
 import { PushStatus } from './types/push-status';
 import { PushParameters } from './types/push-parameters';
 
-export { PushStatus, PushIdentificator, PushQuery, PushConfiguration, PushParameters };
-
 export default class PushManager {
     public readonly endpoint: string;
     public readonly webservice: WebService;
