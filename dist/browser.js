@@ -6127,7 +6127,7 @@
         };
         PushManager.prototype.status = function (identificator) {
             return __awaiter(this, void 0, void 0, function () {
-                var form, statusDocument, element, state, exceptionNode;
+                var form, statusDocument, element, lastSuccessRun, lastRun, state, exceptionNode;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -6138,17 +6138,19 @@
                             element = xpath_1.select('/BPQL/body/pushObject', statusDocument, true);
                             if (!element)
                                 throw new PushManagerException('Not found');
+                            lastSuccessRun = xpath_1.select('string(./lastSuccessRun)', element, true);
+                            lastRun = xpath_1.select('string(./lastRun)', element, true);
                             state = {
                                 created: new Date(xpath_1.select('string(./created)', element, true)),
-                                executions: parseInt(xpath_1.select('string(./executions)', element, true), 10),
-                                trys: parseInt(xpath_1.select('string(./executions)', element, true), 10),
                                 nextJob: new Date(xpath_1.select('string(./nextJob)', element, true)),
-                                lastSuccessRun: new Date(xpath_1.select('string(./lastSuccessRun)', element, true)),
-                                lastRun: new Date(xpath_1.select('string(./lastRun)', element, true)),
                                 expectedNextJob: new Date(xpath_1.select('string(./expectedNextJob)', element, true)),
+                                lastSuccessRun: lastSuccessRun ? new Date(lastSuccessRun) : undefined,
+                                lastRun: lastRun ? new Date(lastRun) : undefined,
+                                executions: parseInt(xpath_1.select('string(./executions)', element, true) || '0', 10),
+                                trys: parseInt(xpath_1.select('string(./executions)', element, true) || '0', 10),
                                 hasException: xpath_1.select('string(./hasException)', element, true) === 'true',
-                                successExecutions: parseInt(xpath_1.select('string(./successExecutions)', element, true), 10),
-                                version: parseInt(xpath_1.select('string(./version)', element, true), 10),
+                                successExecutions: parseInt(xpath_1.select('string(./successExecutions)', element, true) || '0', 10),
+                                version: parseInt(xpath_1.select('string(./version)', element, true) || '0', 10),
                             };
                             exceptionNode = xpath_1.select('./exception', element, true);
                             if (exceptionNode)

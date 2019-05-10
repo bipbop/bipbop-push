@@ -101,17 +101,20 @@ export default class PushManager {
         const element = <Element> xpath.select('/BPQL/body/pushObject', statusDocument, true);
         if (!element) throw new PushManagerException('Not found');
 
+        const lastSuccessRun = <string>xpath.select('string(./lastSuccessRun)', element, true);
+        const lastRun = <string>xpath.select('string(./lastRun)', element, true);
+
         const state: PushStatus = {
             created: new Date(<string>xpath.select('string(./created)', element, true)),
-            executions: parseInt(<string>xpath.select('string(./executions)', element, true), 10),
-            trys: parseInt(<string>xpath.select('string(./executions)', element, true), 10),
             nextJob: new Date(<string>xpath.select('string(./nextJob)', element, true)),
-            lastSuccessRun: new Date(<string>xpath.select('string(./lastSuccessRun)', element, true)),
-            lastRun: new Date(<string>xpath.select('string(./lastRun)', element, true)),
             expectedNextJob: new Date(<string>xpath.select('string(./expectedNextJob)', element, true)),
+            lastSuccessRun: lastSuccessRun ? new Date(lastSuccessRun) : undefined,
+            lastRun: lastRun ? new Date(lastRun) : undefined,
+            executions: parseInt(<string>xpath.select('string(./executions)', element, true) || '0', 10),
+            trys: parseInt(<string>xpath.select('string(./executions)', element, true) || '0', 10),
             hasException: (<string>xpath.select('string(./hasException)', element, true)) === 'true',
-            successExecutions: parseInt(<string>xpath.select('string(./successExecutions)', element, true), 10),
-            version: parseInt(<string>xpath.select('string(./version)', element, true), 10),
+            successExecutions: parseInt(<string>xpath.select('string(./successExecutions)', element, true) || '0', 10),
+            version: parseInt(<string>xpath.select('string(./version)', element, true) || '0', 10),
         };
 
         const exceptionNode = <Element> xpath.select('./exception', element, true);
