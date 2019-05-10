@@ -389,11 +389,6 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
   integrity sha512-l42BggppR6zLmpfU6fq9HEa2oGPEI8yrSPL3GITjfRInppYFahObbIQOQK3UGxEnyQpltZLaPe75046NOZQikw==
 
-"@types/xmldom@^0.1.29":
-  version "0.1.29"
-  resolved "https://registry.yarnpkg.com/@types/xmldom/-/xmldom-0.1.29.tgz#c4428b0ca86d3b881475726fd94980b38a27c381"
-  integrity sha1-xEKLDKhtO4gUdXJv2UmAs4onw4E=
-
 "@types/yargs@^12.0.2", "@types/yargs@^12.0.9":
   version "12.0.12"
   resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-12.0.12.tgz#45dd1d0638e8c8f153e87d296907659296873916"
@@ -680,12 +675,11 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
-bipbop-webservice@2.0.11:
-  version "2.0.11"
-  resolved "https://registry.yarnpkg.com/bipbop-webservice/-/bipbop-webservice-2.0.11.tgz#a9fa0ecc728489fa4a2318dbceab1d07ffdb3d73"
-  integrity sha512-HloubRFd2aJKvgOJEzHm2T1eD7ND0rh/ws1QxhN5cVMSToL2cS/lycSrrjGZh8YftfzcaT9QIm0XCvFuV9RhUA==
+bipbop-webservice@2.0.14:
+  version "2.0.14"
+  resolved "https://registry.yarnpkg.com/bipbop-webservice/-/bipbop-webservice-2.0.14.tgz#5a082b41fe8537a9399fcc116cd3884299557a97"
+  integrity sha512-uJZHXQ+C4oyj2cU8+fCfWZWXnkOi3rrQScT/6+ly2iHC1F4b0Fs7+e6vOUQFWSE3rKHp9N3iaP7z6FCG17L0Mw==
   dependencies:
-    "@types/xmldom" "^0.1.29"
     cross-fetch "^3.0.2"
     form-data "^2.3.3"
 
@@ -3792,13 +3786,6 @@ rollup-plugin-commonjs@^9.3.4:
     magic-string "^0.25.2"
     resolve "^1.10.0"
     rollup-pluginutils "^2.6.0"
-
-rollup-plugin-dts@^0.15.1:
-  version "0.15.1"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-dts/-/rollup-plugin-dts-0.15.1.tgz#d11fadb10428c3ebccc86b326dd94fd2737d8444"
-  integrity sha512-MFO8pMI9GI57sYOIeYUCzQmTZgATEma9616rAaEaTwZxPo9MVC7NkgOMyBrUyjULSoScdYo+3C0+sOq60rL5RQ==
-  optionalDependencies:
-    "@babel/code-frame" "^7.0.0"
 
 rollup-plugin-filesize@^6.0.1:
   version "6.0.1"
