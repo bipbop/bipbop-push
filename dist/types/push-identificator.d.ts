@@ -1,7 +1,7 @@
 /**
  * Identificador do PUSH
  */
-export declare type PushIdentificator = {
+export interface PushIdentificator {
     /**
      * Nome definido pelo cliente
      */
@@ -10,4 +10,4 @@ export declare type PushIdentificator = {
      * Identificador gerado pela BIPBOP
      */
     id?: string;
-};
+}

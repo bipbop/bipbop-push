@@ -6043,11 +6043,24 @@ var PushManagerException = /** @class */ (function (_super) {
     return PushManagerException;
 }(Error));
 
+/**
+ * Gerenciamento de PUSH da BIPBOP
+ */
 var PushManager = /** @class */ (function () {
+    /**
+     * Inicializa o serviço de PUSH
+     * @param webservice O WebService da BIPBOP
+     * @param endpoint O endpoint
+     */
     function PushManager(webservice, endpoint) {
         this.webservice = webservice;
         this.endpoint = endpoint || 'PUSH';
     }
+    /**
+     * Instância o serviço
+     * @param key Chave de acesso da BIPBOP
+     * @param endpoint Endereço do serviço de PUSH na BIPBOP
+     */
     PushManager.fromKey = function (key, endpoint) {
         return new this(new WebService(key), endpoint);
     };

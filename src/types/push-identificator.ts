@@ -1,13 +1,13 @@
 /**
  * Identificador do PUSH
  */
-export type PushIdentificator = {
+export interface PushIdentificator {
     /**
      * Nome definido pelo cliente
      */
-    label?: string,
+    label?: string;
     /**
      * Identificador gerado pela BIPBOP
      */
-    id?: string,
+    id?: string;
 };

@@ -3,11 +3,30 @@ import { PushQuery } from './types/push-query';
 import { PushConfiguration } from './types/push-configuration';
 import { PushIdentificator } from './types/push-identificator';
 import { PushStatus } from './types/push-status';
+/**
+ * Gerenciamento de PUSH da BIPBOP
+ */
 export default class PushManager {
-    readonly endpoint: string;
-    readonly webservice: WebService;
-    constructor(webservice: WebService, endpoint?: string);
+    /**
+     * Instância o serviço
+     * @param key Chave de acesso da BIPBOP
+     * @param endpoint Endereço do serviço de PUSH na BIPBOP
+     */
     static fromKey(key: string, endpoint?: string): PushManager;
+    /**
+     * Endpoint do serviço
+     */
+    readonly endpoint: string;
+    /**
+     * Instância do WebService
+     */
+    readonly webservice: WebService;
+    /**
+     * Inicializa o serviço de PUSH
+     * @param webservice O WebService da BIPBOP
+     * @param endpoint O endpoint
+     */
+    constructor(webservice: WebService, endpoint?: string);
     create(pushQuery: PushQuery, configuration?: PushConfiguration, label?: string): Promise<PushIdentificator>;
     private static translateConfiguration;
     private static addParameter;

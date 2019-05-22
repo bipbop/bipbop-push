@@ -1,4 +1,4 @@
-/* bipbop-push version 1.0.3 */
+/* bipbop-push version 1.0.5 */
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('bipbop-webservice')) :
     typeof define === 'function' && define.amd ? define(['bipbop-webservice'], factory) :
@@ -6046,11 +6046,24 @@
         return PushManagerException;
     }(Error));
 
+    /**
+     * Gerenciamento de PUSH da BIPBOP
+     */
     var PushManager = /** @class */ (function () {
+        /**
+         * Inicializa o serviço de PUSH
+         * @param webservice O WebService da BIPBOP
+         * @param endpoint O endpoint
+         */
         function PushManager(webservice, endpoint) {
             this.webservice = webservice;
             this.endpoint = endpoint || 'PUSH';
         }
+        /**
+         * Instância o serviço
+         * @param key Chave de acesso da BIPBOP
+         * @param endpoint Endereço do serviço de PUSH na BIPBOP
+         */
         PushManager.fromKey = function (key, endpoint) {
             return new this(new WebService(key), endpoint);
         };

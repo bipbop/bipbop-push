@@ -3,52 +3,52 @@ import { PushException } from "./push-exception";
 /**
  * Estado do PUSH
  */
-export type PushStatus = {
+export interface PushStatus {
     /**
      * Quantidade de versões com sucesso
      */
-    version?: number,
+    version?: number;
     /**
      * Data de criação
      */
-    created?: Date,
+    created?: Date;
     /**
      * Tentativas
      */
-    trys?: number,
+    trys?: number;
 
     /**
      * Está quebrado?
      */
-    hasException?: boolean,
+    hasException?: boolean;
 
     /**
      * Exceção
      */
-    exception?: PushException,
+    exception?: PushException;
     /**
      * Quantidade de execuções
      */
-    executions?: number,
+    executions?: number;
     /**
      * Quantidade de execuções com sucesso
      */
-    successExecutions?: number,
+    successExecutions?: number;
     /**
-     * Data da próxima execução (pode ser no passado, neste caso está atrasado)
+     * Data da próxima execução (pode ser no passado; neste caso está atrasado)
      */
-    nextJob?: Date,
+    nextJob?: Date;
     /**
      * Data da última execução
      */
-    lastRun?: Date,
+    lastRun?: Date;
     /**
      * Data da última execução com sucesso
      */
-    lastSuccessRun?: Date,
+    lastSuccessRun?: Date;
     /**
      * Data da execução esperada com sucesso
      */
-    expectedNextJob?: Date,
+    expectedNextJob?: Date;
 
 };

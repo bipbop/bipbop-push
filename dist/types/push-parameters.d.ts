@@ -1,3 +1,3 @@
-export declare type PushParameters = {
+export interface PushParameters {
     [key: string]: string;
-};
+}

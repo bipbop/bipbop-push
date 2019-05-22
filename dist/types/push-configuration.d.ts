@@ -1,13 +1,13 @@
 /**
  * Configuração do PUSH
  */
-export declare type PushConfiguration = {
+export interface PushConfiguration {
     /**
-     * Data da próxima execução (pode ser no passado, neste caso está atrasado)
+     * Data da próxima execução (pode ser no passado; neste caso está atrasado)
      */
     nextJob?: Date;
     /**
-     * Prioridade, quanto maior, melhor
+     * Prioridade; quanto maior; melhor
      */
     priority?: number;
     /**
@@ -42,4 +42,4 @@ export declare type PushConfiguration = {
      * Realizar próximas versões apenas em dias comerciais
      */
     weekdays?: boolean;
-};
+}

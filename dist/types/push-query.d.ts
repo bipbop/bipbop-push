@@ -2,7 +2,7 @@ import { PushParameters } from "./push-parameters";
 /**
  * Consulta do PUSH
  */
-export declare type PushQuery = {
+export interface PushQuery {
     /**
      * Consulta
      */
@@ -11,4 +11,4 @@ export declare type PushQuery = {
      * Parâmetros
      */
     parameters?: PushParameters;
-};
+}

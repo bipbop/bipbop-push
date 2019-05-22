@@ -2,7 +2,7 @@ import { PushException } from "./push-exception";
 /**
  * Estado do PUSH
  */
-export declare type PushStatus = {
+export interface PushStatus {
     /**
      * Quantidade de versões com sucesso
      */
@@ -32,7 +32,7 @@ export declare type PushStatus = {
      */
     successExecutions?: number;
     /**
-     * Data da próxima execução (pode ser no passado, neste caso está atrasado)
+     * Data da próxima execução (pode ser no passado; neste caso está atrasado)
      */
     nextJob?: Date;
     /**
@@ -47,4 +47,4 @@ export declare type PushStatus = {
      * Data da execução esperada com sucesso
      */
     expectedNextJob?: Date;
-};
+}

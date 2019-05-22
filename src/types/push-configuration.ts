@@ -1,45 +1,45 @@
 /**
  * Configuração do PUSH
  */
-export type PushConfiguration = {
+export interface PushConfiguration {
     /**
-     * Data da próxima execução (pode ser no passado, neste caso está atrasado)
+     * Data da próxima execução (pode ser no passado; neste caso está atrasado)
      */
-    nextJob?: Date,
+    nextJob?: Date;
     /**
-     * Prioridade, quanto maior, melhor
+     * Prioridade; quanto maior; melhor
      */
-    priority?: number,
+    priority?: number;
     /**
      * Intervalo em segundos entre as consultas
      */
-    interval?: number,
+    interval?: number;
     /**
      * Em caso de falha tenta novamente em X segundos
      */
-    retryIn?: number,
+    retryIn?: number;
     /**
      * URL de CALLBACK
      */
-    callback?: string,
+    callback?: string;
     /**
      * Quantidade máxima de versões com sucesso antes de ser deletado
      */
-    maxVersion?: number,
+    maxVersion?: number;
     /**
      * Marcadores inteligentes
      */
-    tags?: string[],
+    tags?: string[];
     /**
      * O resultado deve ser transmitido via WebSocket?
      */
-    webSocketDeliver?: boolean,
+    webSocketDeliver?: boolean;
     /**
      * Quantidade máxima de tentativas para entregar o resultado em um ENDPOINT
      */
-    maxCallbackTrys?: boolean,
+    maxCallbackTrys?: boolean;
     /**
      * Realizar próximas versões apenas em dias comerciais
      */
-    weekdays?: boolean,
+    weekdays?: boolean;
 };

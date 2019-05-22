@@ -3,13 +3,13 @@ import { PushParameters } from "./push-parameters";
 /**
  * Consulta do PUSH
  */
-export type PushQuery = {
+export interface PushQuery {
     /**
      * Consulta
      */
-    target: string,
+    target: string;
     /**
      * Parâmetros
      */
-    parameters?: PushParameters,
+    parameters?: PushParameters;
 };

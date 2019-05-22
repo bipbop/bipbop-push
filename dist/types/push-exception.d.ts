@@ -1,7 +1,7 @@
 /**
  * Exceção do PUSH
  */
-export declare type PushException = {
+export interface PushException {
     /**
      * Tipo da exceção
      */
@@ -22,4 +22,4 @@ export declare type PushException = {
      * ID de Exceção
      */
     id: string;
-};
+}

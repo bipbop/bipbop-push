@@ -10,17 +10,38 @@ import { PushIdentificator } from './types/push-identificator';
 import { PushStatus } from './types/push-status';
 import { PushParameters } from './types/push-parameters';
 
+/**
+ * Gerenciamento de PUSH da BIPBOP
+ */
 export default class PushManager {
-    public readonly endpoint: string;
-    public readonly webservice: WebService;
 
-    constructor(webservice: WebService, endpoint?: string) {
-        this.webservice = webservice;
-        this.endpoint = endpoint || 'PUSH';
+    /**
+     * Instância o serviço
+     * @param key Chave de acesso da BIPBOP
+     * @param endpoint Endereço do serviço de PUSH na BIPBOP
+     */
+    public static fromKey(key: string, endpoint?: string) : PushManager {
+        return new this(new WebService(key), endpoint);
     }
 
-    static fromKey(key: string, endpoint?: string) {
-        return new this(new WebService(key), endpoint);
+    /**
+     * Endpoint do serviço
+     */
+    public readonly endpoint: string;
+
+    /**
+     * Instância do WebService
+     */
+    public readonly webservice: WebService;
+
+    /**
+     * Inicializa o serviço de PUSH
+     * @param webservice O WebService da BIPBOP
+     * @param endpoint O endpoint
+     */
+        constructor(webservice: WebService, endpoint?: string) {
+        this.webservice = webservice;
+        this.endpoint = endpoint || 'PUSH';
     }
 
     async create(pushQuery: PushQuery, configuration: PushConfiguration = {}, label?: string) : Promise<PushIdentificator> {

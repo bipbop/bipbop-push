@@ -1,23 +1,23 @@
 /**
  * Exceção do PUSH
  */
-export type PushException = {
+export interface PushException {
     /**
      * Tipo da exceção
      */
-    type: string,
+    type: string;
     /**
      * Código
      */
-    code: number,
+    code: number;
     /**
      * Mensagem
      */
-    message: string,
+    message: string;
     /**
      * ID de LOG
      */
-    log: string,
+    log: string;
     /**
      * ID de Exceção
      */
