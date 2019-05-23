@@ -5,7 +5,7 @@
     "strict": true,
     "esModuleInterop": true,
     "declaration": true,
-    "rootDir": "src"
+    "sourceMap": true
   },
   "exclude": ["node_modules", "lib", "dist", "src/__tests__"],
   "paths": ["src"],  

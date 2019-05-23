@@ -4,10 +4,30 @@ import commonjs from 'rollup-plugin-commonjs';
 import filesize from 'rollup-plugin-filesize';
 import { version, main, browser } from './package.json';
 
+const plugins = [
+    typescript(),
+    commonjs({ extensions: ['.js', '.ts'] }),
+    resolve({ preferBuiltins: false }),
+    filesize(),
+];
+
 export default [
+    {
+        external: ['bipbop-webservice', 'xpath'],
+        input: './src/index.ts',
+        plugins,
+        output: [
+            {
+                file: main,
+                format: 'cjs',
+                sourcemap: true,
+            },
+        ],
+    },
     {
         external: ['bipbop-webservice'],
         input: './src/index.ts',
+        plugins,
         output: [
             {
                 banner: `/* bipbop-push version ${version} */`,
@@ -18,17 +38,8 @@ export default [
                 globals: {
                     'bipbop-webservice': 'bipbop.WebService',
                 },
+                sourcemap: true,
             },
-            {
-                file: main,
-                format: 'cjs',
-            },
-        ],
-        plugins: [
-            typescript(),
-            commonjs({ extensions: ['.js', '.ts'] }),
-            resolve({ preferBuiltins: false }),
-            filesize(),
         ],
     },
 ];
