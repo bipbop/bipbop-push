@@ -1,6 +1,6 @@
 {
   "name": "bipbop-push",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Gerenciamento de PUSH",
   "main": "dist/index.js",
   "browser": "dist/browser.js",
@@ -16,7 +16,7 @@
     "prepack": "npm run build"
   },
   "dependencies": {
-    "bipbop-webservice": "2.0.18",
+    "bipbop-webservice": "2.0.19",
     "xpath": "^0.0.27"
   },
   "devDependencies": {
