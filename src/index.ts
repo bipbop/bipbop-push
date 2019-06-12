@@ -55,7 +55,8 @@ export default class PushManager {
 
         PushManager.addParameter(form, label, 'pushLabel');
 
-        const response = await WebService.parse(this.webservice.request(`INSERT INTO '${this.endpoint}'.'JOB'`, form));
+        const response = await WebService.parse(this.webservice.request(`INSERT INTO '${this.endpoint}'.'JOB'`, form)) as Document;
+        WebService.throwException(response);
         const id = <string> xpath.select('string(/BPQL/body/id)', response, true);
         if (!id) throw new PushManagerException('Push ID not received as a text');
 
@@ -71,6 +72,7 @@ export default class PushManager {
     public async status(identificator: PushIdentificator, isDeleted: boolean = false) : Promise<PushStatus> {
         const form = PushManager.validateIdentificator(identificator);
         const statusDocument = <Document> await WebService.parse(this.webservice.request(`SELECT FROM '${this.endpoint}'.'${isDeleted ? 'DELETEDJOB' : 'JOB'}'`, form));
+        WebService.throwException(statusDocument);
         const element = <Element> xpath.select('/BPQL/body/pushObject', statusDocument, true);
         if (!element) throw new PushManagerException('Not found');
 

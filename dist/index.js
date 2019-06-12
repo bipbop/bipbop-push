@@ -2232,6 +2232,7 @@ var PushManager = /** @class */ (function () {
                         return [4 /*yield*/, WebService.parse(this.webservice.request("INSERT INTO '" + this.endpoint + "'.'JOB'", form))];
                     case 1:
                         response = _a.sent();
+                        WebService.throwException(response);
                         id = xpath.select('string(/BPQL/body/id)', response, true);
                         if (!id)
                             throw new PushManagerException('Push ID not received as a text');
@@ -2256,6 +2257,7 @@ var PushManager = /** @class */ (function () {
                         return [4 /*yield*/, WebService.parse(this.webservice.request("SELECT FROM '" + this.endpoint + "'.'" + (isDeleted ? 'DELETEDJOB' : 'JOB') + "'", form))];
                     case 1:
                         statusDocument = _a.sent();
+                        WebService.throwException(statusDocument);
                         element = xpath.select('/BPQL/body/pushObject', statusDocument, true);
                         if (!element)
                             throw new PushManagerException('Not found');

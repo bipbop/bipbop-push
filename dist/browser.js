@@ -1,4 +1,4 @@
-/* bipbop-push version 1.0.9 */
+/* bipbop-push version 1.0.10 */
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('bipbop-webservice')) :
     typeof define === 'function' && define.amd ? define(['bipbop-webservice'], factory) :
@@ -6999,6 +6999,7 @@
                             return [4 /*yield*/, WebService.parse(this.webservice.request("INSERT INTO '" + this.endpoint + "'.'JOB'", form))];
                         case 1:
                             response = _a.sent();
+                            WebService.throwException(response);
                             id = xpath_1.select('string(/BPQL/body/id)', response, true);
                             if (!id)
                                 throw new PushManagerException('Push ID not received as a text');
@@ -7023,6 +7024,7 @@
                             return [4 /*yield*/, WebService.parse(this.webservice.request("SELECT FROM '" + this.endpoint + "'.'" + (isDeleted ? 'DELETEDJOB' : 'JOB') + "'", form))];
                         case 1:
                             statusDocument = _a.sent();
+                            WebService.throwException(statusDocument);
                             element = xpath_1.select('/BPQL/body/pushObject', statusDocument, true);
                             if (!element)
                                 throw new PushManagerException('Not found');
