@@ -40,6 +40,10 @@ export interface PushStatus {
      */
     lastRun?: Date;
     /**
+     * Data da última execução
+     */
+    deleted?: Date;
+    /**
      * Data da última execução com sucesso
      */
     lastSuccessRun?: Date;

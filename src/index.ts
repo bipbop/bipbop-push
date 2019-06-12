@@ -39,12 +39,12 @@ export default class PushManager {
      * @param webservice O WebService da BIPBOP
      * @param endpoint O endpoint
      */
-        constructor(webservice: WebService, endpoint?: string) {
+    constructor(webservice: WebService, endpoint?: string) {
         this.webservice = webservice;
         this.endpoint = endpoint || 'PUSH';
     }
 
-    async create(pushQuery: PushQuery, configuration: PushConfiguration = {}, label?: string) : Promise<PushIdentificator> {
+    public async create(pushQuery: PushQuery, configuration: PushConfiguration = {}, label?: string) : Promise<PushIdentificator> {
         const { target, parameters } = pushQuery;
 
         const form = {
@@ -68,18 +68,62 @@ export default class PushManager {
         return identificator;
     }
 
-    private static translateConfiguration(params:PushConfiguration) : Form {
-        const form = {};
-        PushManager.addParameter(form, params.nextJob, 'pushNextJob');
-        PushManager.addParameter(form, params.priority, 'pushPriority');
-        PushManager.addParameter(form, params.interval, 'pushInterval');
-        PushManager.addParameter(form, params.retryIn, 'pushRetryIn');
-        PushManager.addParameter(form, params.callback, 'pushCallback');
-        PushManager.addParameter(form, params.maxVersion, 'pushMaxVersion');
-        PushManager.addParameter(form, params.tags, 'pushTags');
-        PushManager.addParameter(form, params.webSocketDeliver, 'pushWebSocketDeliver');
-        PushManager.addParameter(form, params.maxCallbackTrys, 'pushMaxCallbackTrys');
-        PushManager.addParameter(form, params.weekdays, 'pushWeekdays');
+    public async status(identificator: PushIdentificator, isDeleted: boolean = false) : Promise<PushStatus> {
+        const form = PushManager.validateIdentificator(identificator);
+        const statusDocument = <Document> await WebService.parse(this.webservice.request(`SELECT FROM '${this.endpoint}'.'${isDeleted ? 'DELETEDJOB' : 'JOB'}'`, form));
+        const element = <Element> xpath.select('/BPQL/body/pushObject', statusDocument, true);
+        if (!element) throw new PushManagerException('Not found');
+
+        const lastSuccessRun = <string>xpath.select('string(./lastSuccessRun)', element, true);
+        const lastRun = <string>xpath.select('string(./lastRun)', element, true);
+        const deleted = <string>xpath.select('string(./deleted)', element, true);
+
+        const state: PushStatus = {
+            created: new Date(<string>xpath.select('string(./created)', element, true)),
+            nextJob: new Date(<string>xpath.select('string(./nextJob)', element, true)),
+            expectedNextJob: new Date(<string>xpath.select('string(./expectedNextJob)', element, true)),
+            lastSuccessRun: lastSuccessRun ? new Date(lastSuccessRun) : undefined,
+            lastRun: lastRun ? new Date(lastRun) : undefined,
+            executions: parseInt(<string>xpath.select('string(./executions)', element, true) || '0', 10),
+            trys: parseInt(<string>xpath.select('string(./executions)', element, true) || '0', 10),
+            hasException: (<string>xpath.select('string(./hasException)', element, true)) === 'true',
+            successExecutions: parseInt(<string>xpath.select('string(./successExecutions)', element, true) || '0', 10),
+            version: parseInt(<string>xpath.select('string(./version)', element, true) || '0', 10),
+            deleted: deleted ? new Date(deleted) : undefined,
+        };
+
+        const exceptionNode = <Element> xpath.select('./exception', element, true);
+        if (exceptionNode) state.exception = {
+            code: parseInt(<string>xpath.select('string(./code)', exceptionNode, true)  || '0', 10),
+            type: <string>xpath.select('string(./type)', exceptionNode, true) || '',
+            log: <string>xpath.select('string(./log)', exceptionNode, true) || '',
+            id: <string>xpath.select('string(./id)', exceptionNode, true) || '',
+            message: <string>xpath.select('string(./message)', exceptionNode, true) || '',
+        };
+
+        return state;
+    }
+
+    public async document(identificator: PushIdentificator): Promise<any> {
+        const form = PushManager.validateIdentificator(identificator);
+        const response = await WebService.parse(this.webservice.request(`SELECT FROM '${this.endpoint}'.'DOCUMENT'`, form));
+        if (get(response, 'constructor.name') === 'Document') {
+            WebService.throwException(response);
+        }
+        return response;
+    }
+
+    public async delete(identificator: PushIdentificator): Promise<void> {
+        const form = PushManager.validateIdentificator(identificator);
+        await this.webservice.request(`DELETE FROM '${this.endpoint}'.'JOB'`, form);
+    }
+
+    private static validateIdentificator(identificator: PushIdentificator): Form {
+        const { id, label } = identificator;
+        const form: Form = {}
+        if (id) form.id = id;
+        else if (label) form.label = label;
+        else throw new PushManagerException('Register at least one identifier in the object.');
         return form;
     }
 
@@ -109,61 +153,19 @@ export default class PushManager {
         return;
     }
 
-    private static validateIdentificator(identificator: PushIdentificator): Form {
-        const { id, label } = identificator;
-        const form: Form = {}
-        if (id) form.id = id;
-        else if (label) form.label = label;
-        else throw new PushManagerException('Register at least one identifier in the object.');
+    private static translateConfiguration(params:PushConfiguration) : Form {
+        const form = {};
+        PushManager.addParameter(form, params.nextJob, 'pushNextJob');
+        PushManager.addParameter(form, params.priority, 'pushPriority');
+        PushManager.addParameter(form, params.interval, 'pushInterval');
+        PushManager.addParameter(form, params.retryIn, 'pushRetryIn');
+        PushManager.addParameter(form, params.callback, 'pushCallback');
+        PushManager.addParameter(form, params.maxVersion, 'pushMaxVersion');
+        PushManager.addParameter(form, params.tags, 'pushTags');
+        PushManager.addParameter(form, params.webSocketDeliver, 'pushWebSocketDeliver');
+        PushManager.addParameter(form, params.maxCallbackTrys, 'pushMaxCallbackTrys');
+        PushManager.addParameter(form, params.weekdays, 'pushWeekdays');
         return form;
     }
-
-    async status(identificator: PushIdentificator) : Promise<PushStatus> {
-        const form = PushManager.validateIdentificator(identificator);
-        const statusDocument = <Document> await WebService.parse(this.webservice.request(`SELECT FROM '${this.endpoint}'.'JOB'`, form));
-        const element = <Element> xpath.select('/BPQL/body/pushObject', statusDocument, true);
-        if (!element) throw new PushManagerException('Not found');
-
-        const lastSuccessRun = <string>xpath.select('string(./lastSuccessRun)', element, true);
-        const lastRun = <string>xpath.select('string(./lastRun)', element, true);
-
-        const state: PushStatus = {
-            created: new Date(<string>xpath.select('string(./created)', element, true)),
-            nextJob: new Date(<string>xpath.select('string(./nextJob)', element, true)),
-            expectedNextJob: new Date(<string>xpath.select('string(./expectedNextJob)', element, true)),
-            lastSuccessRun: lastSuccessRun ? new Date(lastSuccessRun) : undefined,
-            lastRun: lastRun ? new Date(lastRun) : undefined,
-            executions: parseInt(<string>xpath.select('string(./executions)', element, true) || '0', 10),
-            trys: parseInt(<string>xpath.select('string(./executions)', element, true) || '0', 10),
-            hasException: (<string>xpath.select('string(./hasException)', element, true)) === 'true',
-            successExecutions: parseInt(<string>xpath.select('string(./successExecutions)', element, true) || '0', 10),
-            version: parseInt(<string>xpath.select('string(./version)', element, true) || '0', 10),
-        };
-
-        const exceptionNode = <Element> xpath.select('./exception', element, true);
-        if (exceptionNode) state.exception = {
-            code: parseInt(<string>xpath.select('string(./code)', exceptionNode, true)  || '0', 10),
-            type: <string>xpath.select('string(./type)', exceptionNode, true) || '',
-            log: <string>xpath.select('string(./log)', exceptionNode, true) || '',
-            id: <string>xpath.select('string(./id)', exceptionNode, true) || '',
-            message: <string>xpath.select('string(./message)', exceptionNode, true) || '',
-        };
-
-        return state;
-    }
-
-    async document(identificator: PushIdentificator): Promise<any> {
-        const form = PushManager.validateIdentificator(identificator);
-        const response = await WebService.parse(this.webservice.request(`SELECT FROM '${this.endpoint}'.'DOCUMENT'`, form));
-        if (get(response, 'constructor.name') === 'Document') {
-            WebService.throwException(response);
-        }
-        return response;
-    }
-
-    async delete(identificator: PushIdentificator): Promise<void> {
-        const form = PushManager.validateIdentificator(identificator);
-        await this.webservice.request(`DELETE FROM '${this.endpoint}'.'JOB'`, form);
-    }
-
+    
 }

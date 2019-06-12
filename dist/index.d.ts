@@ -28,10 +28,10 @@ export default class PushManager {
      */
     constructor(webservice: WebService, endpoint?: string);
     create(pushQuery: PushQuery, configuration?: PushConfiguration, label?: string): Promise<PushIdentificator>;
-    private static translateConfiguration;
-    private static addParameter;
-    private static validateIdentificator;
-    status(identificator: PushIdentificator): Promise<PushStatus>;
+    status(identificator: PushIdentificator, isDeleted?: boolean): Promise<PushStatus>;
     document(identificator: PushIdentificator): Promise<any>;
     delete(identificator: PushIdentificator): Promise<void>;
+    private static validateIdentificator;
+    private static addParameter;
+    private static translateConfiguration;
 }

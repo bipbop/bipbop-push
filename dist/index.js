@@ -2245,61 +2245,15 @@ var PushManager = /** @class */ (function () {
             });
         });
     };
-    PushManager.translateConfiguration = function (params) {
-        var form = {};
-        PushManager.addParameter(form, params.nextJob, 'pushNextJob');
-        PushManager.addParameter(form, params.priority, 'pushPriority');
-        PushManager.addParameter(form, params.interval, 'pushInterval');
-        PushManager.addParameter(form, params.retryIn, 'pushRetryIn');
-        PushManager.addParameter(form, params.callback, 'pushCallback');
-        PushManager.addParameter(form, params.maxVersion, 'pushMaxVersion');
-        PushManager.addParameter(form, params.tags, 'pushTags');
-        PushManager.addParameter(form, params.webSocketDeliver, 'pushWebSocketDeliver');
-        PushManager.addParameter(form, params.maxCallbackTrys, 'pushMaxCallbackTrys');
-        PushManager.addParameter(form, params.weekdays, 'pushWeekdays');
-        return form;
-    };
-    PushManager.addParameter = function (form, value, key) {
-        if (value === null || typeof value === 'undefined')
-            return;
-        if (typeof value === "number") {
-            form[key] = value.toString();
-            return;
-        }
-        if (typeof value === "boolean") {
-            form[key] = value ? 'true' : 'false';
-            return;
-        }
-        if (Array.isArray(value)) {
-            form[key] = value.join(',');
-            return;
-        }
-        if (value instanceof Date) {
-            form[key] = parseInt((value.getTime() / 1000).toFixed(0)).toString();
-            return;
-        }
-        form[key] = value;
-        return;
-    };
-    PushManager.validateIdentificator = function (identificator) {
-        var id = identificator.id, label = identificator.label;
-        var form = {};
-        if (id)
-            form.id = id;
-        else if (label)
-            form.label = label;
-        else
-            throw new PushManagerException('Register at least one identifier in the object.');
-        return form;
-    };
-    PushManager.prototype.status = function (identificator) {
+    PushManager.prototype.status = function (identificator, isDeleted) {
+        if (isDeleted === void 0) { isDeleted = false; }
         return __awaiter(this, void 0, void 0, function () {
-            var form, statusDocument, element, lastSuccessRun, lastRun, state, exceptionNode;
+            var form, statusDocument, element, lastSuccessRun, lastRun, deleted, state, exceptionNode;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         form = PushManager.validateIdentificator(identificator);
-                        return [4 /*yield*/, WebService.parse(this.webservice.request("SELECT FROM '" + this.endpoint + "'.'JOB'", form))];
+                        return [4 /*yield*/, WebService.parse(this.webservice.request("SELECT FROM '" + this.endpoint + "'.'" + (isDeleted ? 'DELETEDJOB' : 'JOB') + "'", form))];
                     case 1:
                         statusDocument = _a.sent();
                         element = xpath.select('/BPQL/body/pushObject', statusDocument, true);
@@ -2307,6 +2261,7 @@ var PushManager = /** @class */ (function () {
                             throw new PushManagerException('Not found');
                         lastSuccessRun = xpath.select('string(./lastSuccessRun)', element, true);
                         lastRun = xpath.select('string(./lastRun)', element, true);
+                        deleted = xpath.select('string(./deleted)', element, true);
                         state = {
                             created: new Date(xpath.select('string(./created)', element, true)),
                             nextJob: new Date(xpath.select('string(./nextJob)', element, true)),
@@ -2318,6 +2273,7 @@ var PushManager = /** @class */ (function () {
                             hasException: xpath.select('string(./hasException)', element, true) === 'true',
                             successExecutions: parseInt(xpath.select('string(./successExecutions)', element, true) || '0', 10),
                             version: parseInt(xpath.select('string(./version)', element, true) || '0', 10),
+                            deleted: deleted ? new Date(deleted) : undefined,
                         };
                         exceptionNode = xpath.select('./exception', element, true);
                         if (exceptionNode)
@@ -2365,6 +2321,53 @@ var PushManager = /** @class */ (function () {
                 }
             });
         });
+    };
+    PushManager.validateIdentificator = function (identificator) {
+        var id = identificator.id, label = identificator.label;
+        var form = {};
+        if (id)
+            form.id = id;
+        else if (label)
+            form.label = label;
+        else
+            throw new PushManagerException('Register at least one identifier in the object.');
+        return form;
+    };
+    PushManager.addParameter = function (form, value, key) {
+        if (value === null || typeof value === 'undefined')
+            return;
+        if (typeof value === "number") {
+            form[key] = value.toString();
+            return;
+        }
+        if (typeof value === "boolean") {
+            form[key] = value ? 'true' : 'false';
+            return;
+        }
+        if (Array.isArray(value)) {
+            form[key] = value.join(',');
+            return;
+        }
+        if (value instanceof Date) {
+            form[key] = parseInt((value.getTime() / 1000).toFixed(0)).toString();
+            return;
+        }
+        form[key] = value;
+        return;
+    };
+    PushManager.translateConfiguration = function (params) {
+        var form = {};
+        PushManager.addParameter(form, params.nextJob, 'pushNextJob');
+        PushManager.addParameter(form, params.priority, 'pushPriority');
+        PushManager.addParameter(form, params.interval, 'pushInterval');
+        PushManager.addParameter(form, params.retryIn, 'pushRetryIn');
+        PushManager.addParameter(form, params.callback, 'pushCallback');
+        PushManager.addParameter(form, params.maxVersion, 'pushMaxVersion');
+        PushManager.addParameter(form, params.tags, 'pushTags');
+        PushManager.addParameter(form, params.webSocketDeliver, 'pushWebSocketDeliver');
+        PushManager.addParameter(form, params.maxCallbackTrys, 'pushMaxCallbackTrys');
+        PushManager.addParameter(form, params.weekdays, 'pushWeekdays');
+        return form;
     };
     return PushManager;
 }());
