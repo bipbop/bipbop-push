@@ -1,4 +1,4 @@
-import { PushParameters } from "./push-parameters";
+import { PushParameters } from "./push-parameters"
 
 /**
  * Consulta do PUSH
@@ -12,4 +12,4 @@ export interface PushQuery {
      * Parâmetros
      */
     parameters?: PushParameters;
-};
+}

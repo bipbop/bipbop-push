@@ -42,4 +42,4 @@ export interface PushConfiguration {
      * Realizar próximas versões apenas em dias comerciais
      */
     weekdays?: boolean;
-};
+}

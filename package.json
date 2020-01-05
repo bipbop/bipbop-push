@@ -17,7 +17,8 @@
   },
   "dependencies": {
     "bipbop-webservice": "2.0.22",
-    "xpath": "^0.0.27"
+    "xpath": "^0.0.27",
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
     "@types/jest": "^24.0.25",
@@ -41,7 +42,6 @@
     "prettier": "^1.19.1",
     "rimraf": "^3.0.0",
     "rollup": "^1.28.0",
-    "lodash": "^4.17.15",
     "ts-jest": "^24.2.0",
     "tslib": "^1.10.0",
     "typescript": "^3.7.4"
