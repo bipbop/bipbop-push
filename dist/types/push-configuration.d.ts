@@ -37,7 +37,7 @@ export interface PushConfiguration {
     /**
      * Quantidade máxima de tentativas para entregar o resultado em um ENDPOINT
      */
-    maxCallbackTrys?: boolean;
+    maxCallbackTrys?: number;
     /**
      * Realizar próximas versões apenas em dias comerciais
      */
