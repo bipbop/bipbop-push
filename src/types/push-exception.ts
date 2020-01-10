@@ -21,5 +21,5 @@ export interface PushException {
     /**
      * ID de Exceção
      */
-    id: string
-};
+    id: string;
+}

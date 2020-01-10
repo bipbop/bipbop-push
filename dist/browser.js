@@ -1,4 +1,4 @@
-/* bipbop-push version 1.0.12 */
+/* bipbop-push version 1.0.13 */
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('bipbop-webservice')) :
     typeof define === 'function' && define.amd ? define(['bipbop-webservice'], factory) :
@@ -7036,7 +7036,7 @@
         PushManager.prototype.create = function (pushQuery, configuration, label) {
             if (configuration === void 0) { configuration = {}; }
             return __awaiter(this, void 0, void 0, function () {
-                var target, parameters, form, response, id, identificator;
+                var target, parameters, form, response, id, identifier;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -7045,32 +7045,32 @@
                             PushManager.addParameter(form, label, 'pushLabel');
                             return [4 /*yield*/, WebService.parse(this.webservice.request("INSERT INTO '" + this.endpoint + "'.'JOB'", form))];
                         case 1:
-                            response = _a.sent();
+                            response = (_a.sent());
                             WebService.throwException(response);
                             id = xpath_1.select('string(/BPQL/body/id)', response, true);
                             if (!id)
                                 throw new PushManagerException('Push ID not received as a text');
-                            identificator = {
+                            identifier = {
                                 label: label,
                                 id: id,
                             };
-                            PushManager.validateIdentificator(identificator);
-                            return [2 /*return*/, identificator];
+                            PushManager.validateIdentifier(identifier);
+                            return [2 /*return*/, identifier];
                     }
                 });
             });
         };
-        PushManager.prototype.status = function (identificator, isDeleted) {
+        PushManager.prototype.status = function (identifier, isDeleted) {
             if (isDeleted === void 0) { isDeleted = false; }
             return __awaiter(this, void 0, void 0, function () {
                 var form, statusDocument, element, lastSuccessRun, lastRun, deleted, state, exceptionNode;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            form = PushManager.validateIdentificator(identificator);
+                            form = PushManager.validateIdentifier(identifier);
                             return [4 /*yield*/, WebService.parse(this.webservice.request("SELECT FROM '" + this.endpoint + "'.'" + (isDeleted ? 'DELETEDJOB' : 'JOB') + "'", form))];
                         case 1:
-                            statusDocument = _a.sent();
+                            statusDocument = (_a.sent());
                             WebService.throwException(statusDocument);
                             element = xpath_1.select('/BPQL/body/pushObject', statusDocument, true);
                             if (!element)
@@ -7085,7 +7085,7 @@
                                 lastSuccessRun: lastSuccessRun ? new Date(lastSuccessRun) : undefined,
                                 lastRun: lastRun ? new Date(lastRun) : undefined,
                                 executions: parseInt(xpath_1.select('string(./executions)', element, true) || '0', 10),
-                                trys: parseInt(xpath_1.select('string(./executions)', element, true) || '0', 10),
+                                tries: parseInt(xpath_1.select('string(./tries)', element, true) || '0', 10),
                                 hasException: xpath_1.select('string(./hasException)', element, true) === 'true',
                                 successExecutions: parseInt(xpath_1.select('string(./successExecutions)', element, true) || '0', 10),
                                 version: parseInt(xpath_1.select('string(./version)', element, true) || '0', 10),
@@ -7105,13 +7105,13 @@
                 });
             });
         };
-        PushManager.prototype.document = function (identificator) {
+        PushManager.prototype.document = function (identifier) {
             return __awaiter(this, void 0, void 0, function () {
                 var form, response;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            form = PushManager.validateIdentificator(identificator);
+                            form = PushManager.validateIdentifier(identifier);
                             return [4 /*yield*/, WebService.parse(this.webservice.request("SELECT FROM '" + this.endpoint + "'.'DOCUMENT'", form))];
                         case 1:
                             response = _a.sent();
@@ -7123,13 +7123,13 @@
                 });
             });
         };
-        PushManager.prototype.delete = function (identificator) {
+        PushManager.prototype.delete = function (identifier) {
             return __awaiter(this, void 0, void 0, function () {
                 var form;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            form = PushManager.validateIdentificator(identificator);
+                            form = PushManager.validateIdentifier(identifier);
                             return [4 /*yield*/, this.webservice.request("DELETE FROM '" + this.endpoint + "'.'JOB'", form)];
                         case 1:
                             _a.sent();
@@ -7138,8 +7138,8 @@
                 });
             });
         };
-        PushManager.validateIdentificator = function (identificator) {
-            var id = identificator.id, label = identificator.label;
+        PushManager.validateIdentifier = function (identifier) {
+            var id = identifier.id, label = identifier.label;
             var form = {};
             if (id)
                 form.id = id;
@@ -7152,11 +7152,11 @@
         PushManager.addParameter = function (form, value, key) {
             if (value === null || typeof value === 'undefined')
                 return;
-            if (typeof value === "number") {
+            if (typeof value === 'number') {
                 form[key] = value.toString();
                 return;
             }
-            if (typeof value === "boolean") {
+            if (typeof value === 'boolean') {
                 form[key] = value ? 'true' : 'false';
                 return;
             }
@@ -7165,11 +7165,11 @@
                 return;
             }
             if (value instanceof Date) {
+                // eslint-disable-next-line radix
                 form[key] = parseInt((value.getTime() / 1000).toFixed(0)).toString();
                 return;
             }
             form[key] = value;
-            return;
         };
         PushManager.translateConfiguration = function (params) {
             var form = {};

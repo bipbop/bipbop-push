@@ -1,7 +1,7 @@
 /**
  * Identificador do PUSH
  */
-export interface PushIdentificator {
+export interface PushIdentifier {
     /**
      * Nome definido pelo cliente
      */

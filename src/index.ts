@@ -90,26 +90,29 @@ export default class PushManager {
 
         const state: PushStatus = {
             created: new Date(xpath.select('string(./created)', element, true) as string),
-            nextJob: new Date(xpath.select('string(./nextJob)', element, true)),
-            expectedNextJob: new Date(xpath.select('string(./expectedNextJob)', element, true)),
+            nextJob: new Date(xpath.select('string(./nextJob)', element, true) as string),
+            expectedNextJob: new Date(xpath.select('string(./expectedNextJob)', element, true) as string),
             lastSuccessRun: lastSuccessRun ? new Date(lastSuccessRun) : undefined,
             lastRun: lastRun ? new Date(lastRun) : undefined,
-            executions: parseInt(xpath.select('string(./executions)', element, true) || '0', 10),
-            tries: parseInt(xpath.select('string(./trys)', element, true) || '0', 10),
+            executions: parseInt((xpath.select('string(./executions)', element, true) as string) || '0', 10),
+            tries: parseInt((xpath.select('string(./tries)', element, true) as string) || '0', 10),
             hasException: xpath.select('string(./hasException)', element, true) === 'true',
-            successExecutions: parseInt(xpath.select('string(./successExecutions)', element, true) || '0', 10),
-            version: parseInt(xpath.select('string(./version)', element, true) || '0', 10),
+            successExecutions: parseInt(
+                (xpath.select('string(./successExecutions)', element, true) as string) || '0',
+                10,
+            ),
+            version: parseInt((xpath.select('string(./version)', element, true) as string) || '0', 10),
             deleted: deleted ? new Date(deleted) : undefined,
         };
 
         const exceptionNode = xpath.select('./exception', element, true) as Element;
         if (exceptionNode)
             state.exception = {
-                code: parseInt(xpath.select('string(./code)', exceptionNode, true) || '0', 10),
-                type: xpath.select('string(./type)', exceptionNode, true) || '',
-                log: xpath.select('string(./log)', exceptionNode, true) || '',
-                id: xpath.select('string(./id)', exceptionNode, true) || '',
-                message: xpath.select('string(./message)', exceptionNode, true) || '',
+                code: parseInt((xpath.select('string(./code)', exceptionNode, true) as string) || '0', 10),
+                type: (xpath.select('string(./type)', exceptionNode, true) as string) || '',
+                log: (xpath.select('string(./log)', exceptionNode, true) as string) || '',
+                id: (xpath.select('string(./id)', exceptionNode, true) as string) || '',
+                message: (xpath.select('string(./message)', exceptionNode, true) as string) || '',
             };
 
         return state;

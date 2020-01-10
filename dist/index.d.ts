@@ -1,7 +1,7 @@
 import WebService from 'bipbop-webservice';
 import { PushQuery } from './types/push-query';
 import { PushConfiguration } from './types/push-configuration';
-import { PushIdentificator } from './types/push-identificator';
+import { PushIdentifier } from './types/push-identifier';
 import { PushStatus } from './types/push-status';
 /**
  * Gerenciamento de PUSH da BIPBOP
@@ -27,11 +27,11 @@ export default class PushManager {
      * @param endpoint O endpoint
      */
     constructor(webservice: WebService, endpoint?: string);
-    create(pushQuery: PushQuery, configuration?: PushConfiguration, label?: string): Promise<PushIdentificator>;
-    status(identificator: PushIdentificator, isDeleted?: boolean): Promise<PushStatus>;
-    document(identificator: PushIdentificator): Promise<any>;
-    delete(identificator: PushIdentificator): Promise<void>;
-    private static validateIdentificator;
+    create(pushQuery: PushQuery, configuration?: PushConfiguration, label?: string): Promise<PushIdentifier>;
+    status(identifier: PushIdentifier, isDeleted?: boolean): Promise<PushStatus>;
+    document(identifier: PushIdentifier): Promise<any>;
+    delete(identifier: PushIdentifier): Promise<void>;
+    private static validateIdentifier;
     private static addParameter;
     private static translateConfiguration;
 }

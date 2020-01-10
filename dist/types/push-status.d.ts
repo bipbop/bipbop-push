@@ -1,4 +1,4 @@
-import { PushException } from "./push-exception";
+import { PushException } from './push-exception';
 /**
  * Estado do PUSH
  */
@@ -14,7 +14,7 @@ export interface PushStatus {
     /**
      * Tentativas
      */
-    trys?: number;
+    tries?: number;
     /**
      * Está quebrado?
      */

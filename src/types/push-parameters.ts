@@ -1,1 +1,3 @@
-export interface PushParameters {[key: string]: string};
+export interface PushParameters {
+    [key: string]: string;
+}
