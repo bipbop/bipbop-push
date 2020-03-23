@@ -1,11 +1,11 @@
-/* bipbop-push version 1.0.13 */
+/* bipbop-push version 1.0.14 */
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('bipbop-webservice')) :
     typeof define === 'function' && define.amd ? define(['bipbop-webservice'], factory) :
     (global = global || self, global.BipbopPushManager = factory(global.bipbop.WebService));
 }(this, (function (WebService) { 'use strict';
 
-    WebService = WebService && WebService.hasOwnProperty('default') ? WebService['default'] : WebService;
+    WebService = WebService && Object.prototype.hasOwnProperty.call(WebService, 'default') ? WebService['default'] : WebService;
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
