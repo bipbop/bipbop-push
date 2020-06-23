@@ -1315,621 +1315,6 @@ var ErrorCodes$1 = ErrorCodes;
 
 var errorCodes = ErrorCodes$1;
 
-var commonjsGlobal$1 = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof self !== 'undefined' ? self : {};
-
-function createCommonjsModule(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
-}
-
-var check = function (it) {
-  return it && it.Math == Math && it;
-};
-
-// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
-var global_1 =
-  // eslint-disable-next-line no-undef
-  check(typeof globalThis == 'object' && globalThis) ||
-  check(typeof window == 'object' && window) ||
-  check(typeof self == 'object' && self) ||
-  check(typeof commonjsGlobal$1 == 'object' && commonjsGlobal$1) ||
-  // eslint-disable-next-line no-new-func
-  Function('return this')();
-
-var fails = function (exec) {
-  try {
-    return !!exec();
-  } catch (error) {
-    return true;
-  }
-};
-
-// Thank's IE8 for his funny defineProperty
-var descriptors = !fails(function () {
-  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
-});
-
-var nativePropertyIsEnumerable = {}.propertyIsEnumerable;
-var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-
-// Nashorn ~ JDK8 bug
-var NASHORN_BUG = getOwnPropertyDescriptor && !nativePropertyIsEnumerable.call({ 1: 2 }, 1);
-
-// `Object.prototype.propertyIsEnumerable` method implementation
-// https://tc39.github.io/ecma262/#sec-object.prototype.propertyisenumerable
-var f = NASHORN_BUG ? function propertyIsEnumerable(V) {
-  var descriptor = getOwnPropertyDescriptor(this, V);
-  return !!descriptor && descriptor.enumerable;
-} : nativePropertyIsEnumerable;
-
-var objectPropertyIsEnumerable = {
-	f: f
-};
-
-var createPropertyDescriptor = function (bitmap, value) {
-  return {
-    enumerable: !(bitmap & 1),
-    configurable: !(bitmap & 2),
-    writable: !(bitmap & 4),
-    value: value
-  };
-};
-
-var toString$1 = {}.toString;
-
-var classofRaw = function (it) {
-  return toString$1.call(it).slice(8, -1);
-};
-
-var split = ''.split;
-
-// fallback for non-array-like ES3 and non-enumerable old V8 strings
-var indexedObject = fails(function () {
-  // throws an error in rhino, see https://github.com/mozilla/rhino/issues/346
-  // eslint-disable-next-line no-prototype-builtins
-  return !Object('z').propertyIsEnumerable(0);
-}) ? function (it) {
-  return classofRaw(it) == 'String' ? split.call(it, '') : Object(it);
-} : Object;
-
-// `RequireObjectCoercible` abstract operation
-// https://tc39.github.io/ecma262/#sec-requireobjectcoercible
-var requireObjectCoercible = function (it) {
-  if (it == undefined) throw TypeError("Can't call method on " + it);
-  return it;
-};
-
-// toObject with fallback for non-array-like ES3 strings
-
-
-
-var toIndexedObject = function (it) {
-  return indexedObject(requireObjectCoercible(it));
-};
-
-var isObject$1 = function (it) {
-  return typeof it === 'object' ? it !== null : typeof it === 'function';
-};
-
-// `ToPrimitive` abstract operation
-// https://tc39.github.io/ecma262/#sec-toprimitive
-// instead of the ES6 spec version, we didn't implement @@toPrimitive case
-// and the second argument - flag - preferred type is a string
-var toPrimitive = function (input, PREFERRED_STRING) {
-  if (!isObject$1(input)) return input;
-  var fn, val;
-  if (PREFERRED_STRING && typeof (fn = input.toString) == 'function' && !isObject$1(val = fn.call(input))) return val;
-  if (typeof (fn = input.valueOf) == 'function' && !isObject$1(val = fn.call(input))) return val;
-  if (!PREFERRED_STRING && typeof (fn = input.toString) == 'function' && !isObject$1(val = fn.call(input))) return val;
-  throw TypeError("Can't convert object to primitive value");
-};
-
-var hasOwnProperty$4 = {}.hasOwnProperty;
-
-var has = function (it, key) {
-  return hasOwnProperty$4.call(it, key);
-};
-
-var document = global_1.document;
-// typeof document.createElement is 'object' in old IE
-var EXISTS = isObject$1(document) && isObject$1(document.createElement);
-
-var documentCreateElement = function (it) {
-  return EXISTS ? document.createElement(it) : {};
-};
-
-// Thank's IE8 for his funny defineProperty
-var ie8DomDefine = !descriptors && !fails(function () {
-  return Object.defineProperty(documentCreateElement('div'), 'a', {
-    get: function () { return 7; }
-  }).a != 7;
-});
-
-var nativeGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-
-// `Object.getOwnPropertyDescriptor` method
-// https://tc39.github.io/ecma262/#sec-object.getownpropertydescriptor
-var f$1 = descriptors ? nativeGetOwnPropertyDescriptor : function getOwnPropertyDescriptor(O, P) {
-  O = toIndexedObject(O);
-  P = toPrimitive(P, true);
-  if (ie8DomDefine) try {
-    return nativeGetOwnPropertyDescriptor(O, P);
-  } catch (error) { /* empty */ }
-  if (has(O, P)) return createPropertyDescriptor(!objectPropertyIsEnumerable.f.call(O, P), O[P]);
-};
-
-var objectGetOwnPropertyDescriptor = {
-	f: f$1
-};
-
-var anObject = function (it) {
-  if (!isObject$1(it)) {
-    throw TypeError(String(it) + ' is not an object');
-  } return it;
-};
-
-var nativeDefineProperty = Object.defineProperty;
-
-// `Object.defineProperty` method
-// https://tc39.github.io/ecma262/#sec-object.defineproperty
-var f$2 = descriptors ? nativeDefineProperty : function defineProperty(O, P, Attributes) {
-  anObject(O);
-  P = toPrimitive(P, true);
-  anObject(Attributes);
-  if (ie8DomDefine) try {
-    return nativeDefineProperty(O, P, Attributes);
-  } catch (error) { /* empty */ }
-  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported');
-  if ('value' in Attributes) O[P] = Attributes.value;
-  return O;
-};
-
-var objectDefineProperty = {
-	f: f$2
-};
-
-var createNonEnumerableProperty = descriptors ? function (object, key, value) {
-  return objectDefineProperty.f(object, key, createPropertyDescriptor(1, value));
-} : function (object, key, value) {
-  object[key] = value;
-  return object;
-};
-
-var setGlobal = function (key, value) {
-  try {
-    createNonEnumerableProperty(global_1, key, value);
-  } catch (error) {
-    global_1[key] = value;
-  } return value;
-};
-
-var SHARED = '__core-js_shared__';
-var store = global_1[SHARED] || setGlobal(SHARED, {});
-
-var sharedStore = store;
-
-var functionToString = Function.toString;
-
-// this helper broken in `3.4.1-3.4.4`, so we can't use `shared` helper
-if (typeof sharedStore.inspectSource != 'function') {
-  sharedStore.inspectSource = function (it) {
-    return functionToString.call(it);
-  };
-}
-
-var inspectSource = sharedStore.inspectSource;
-
-var WeakMap = global_1.WeakMap;
-
-var nativeWeakMap = typeof WeakMap === 'function' && /native code/.test(inspectSource(WeakMap));
-
-var shared = createCommonjsModule(function (module) {
-(module.exports = function (key, value) {
-  return sharedStore[key] || (sharedStore[key] = value !== undefined ? value : {});
-})('versions', []).push({
-  version: '3.6.1',
-  mode:  'global',
-  copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
-});
-});
-
-var id = 0;
-var postfix = Math.random();
-
-var uid = function (key) {
-  return 'Symbol(' + String(key === undefined ? '' : key) + ')_' + (++id + postfix).toString(36);
-};
-
-var keys = shared('keys');
-
-var sharedKey = function (key) {
-  return keys[key] || (keys[key] = uid(key));
-};
-
-var hiddenKeys = {};
-
-var WeakMap$1 = global_1.WeakMap;
-var set, get$1, has$1;
-
-var enforce = function (it) {
-  return has$1(it) ? get$1(it) : set(it, {});
-};
-
-var getterFor = function (TYPE) {
-  return function (it) {
-    var state;
-    if (!isObject$1(it) || (state = get$1(it)).type !== TYPE) {
-      throw TypeError('Incompatible receiver, ' + TYPE + ' required');
-    } return state;
-  };
-};
-
-if (nativeWeakMap) {
-  var store$1 = new WeakMap$1();
-  var wmget = store$1.get;
-  var wmhas = store$1.has;
-  var wmset = store$1.set;
-  set = function (it, metadata) {
-    wmset.call(store$1, it, metadata);
-    return metadata;
-  };
-  get$1 = function (it) {
-    return wmget.call(store$1, it) || {};
-  };
-  has$1 = function (it) {
-    return wmhas.call(store$1, it);
-  };
-} else {
-  var STATE = sharedKey('state');
-  hiddenKeys[STATE] = true;
-  set = function (it, metadata) {
-    createNonEnumerableProperty(it, STATE, metadata);
-    return metadata;
-  };
-  get$1 = function (it) {
-    return has(it, STATE) ? it[STATE] : {};
-  };
-  has$1 = function (it) {
-    return has(it, STATE);
-  };
-}
-
-var internalState = {
-  set: set,
-  get: get$1,
-  has: has$1,
-  enforce: enforce,
-  getterFor: getterFor
-};
-
-var redefine = createCommonjsModule(function (module) {
-var getInternalState = internalState.get;
-var enforceInternalState = internalState.enforce;
-var TEMPLATE = String(String).split('String');
-
-(module.exports = function (O, key, value, options) {
-  var unsafe = options ? !!options.unsafe : false;
-  var simple = options ? !!options.enumerable : false;
-  var noTargetGet = options ? !!options.noTargetGet : false;
-  if (typeof value == 'function') {
-    if (typeof key == 'string' && !has(value, 'name')) createNonEnumerableProperty(value, 'name', key);
-    enforceInternalState(value).source = TEMPLATE.join(typeof key == 'string' ? key : '');
-  }
-  if (O === global_1) {
-    if (simple) O[key] = value;
-    else setGlobal(key, value);
-    return;
-  } else if (!unsafe) {
-    delete O[key];
-  } else if (!noTargetGet && O[key]) {
-    simple = true;
-  }
-  if (simple) O[key] = value;
-  else createNonEnumerableProperty(O, key, value);
-// add fake Function#toString for correct work wrapped methods / constructors with methods like LoDash isNative
-})(Function.prototype, 'toString', function toString() {
-  return typeof this == 'function' && getInternalState(this).source || inspectSource(this);
-});
-});
-
-var path = global_1;
-
-var aFunction = function (variable) {
-  return typeof variable == 'function' ? variable : undefined;
-};
-
-var getBuiltIn = function (namespace, method) {
-  return arguments.length < 2 ? aFunction(path[namespace]) || aFunction(global_1[namespace])
-    : path[namespace] && path[namespace][method] || global_1[namespace] && global_1[namespace][method];
-};
-
-var ceil = Math.ceil;
-var floor = Math.floor;
-
-// `ToInteger` abstract operation
-// https://tc39.github.io/ecma262/#sec-tointeger
-var toInteger = function (argument) {
-  return isNaN(argument = +argument) ? 0 : (argument > 0 ? floor : ceil)(argument);
-};
-
-var min = Math.min;
-
-// `ToLength` abstract operation
-// https://tc39.github.io/ecma262/#sec-tolength
-var toLength = function (argument) {
-  return argument > 0 ? min(toInteger(argument), 0x1FFFFFFFFFFFFF) : 0; // 2 ** 53 - 1 == 9007199254740991
-};
-
-var max = Math.max;
-var min$1 = Math.min;
-
-// Helper for a popular repeating case of the spec:
-// Let integer be ? ToInteger(index).
-// If integer < 0, let result be max((length + integer), 0); else let result be min(integer, length).
-var toAbsoluteIndex = function (index, length) {
-  var integer = toInteger(index);
-  return integer < 0 ? max(integer + length, 0) : min$1(integer, length);
-};
-
-// `Array.prototype.{ indexOf, includes }` methods implementation
-var createMethod = function (IS_INCLUDES) {
-  return function ($this, el, fromIndex) {
-    var O = toIndexedObject($this);
-    var length = toLength(O.length);
-    var index = toAbsoluteIndex(fromIndex, length);
-    var value;
-    // Array#includes uses SameValueZero equality algorithm
-    // eslint-disable-next-line no-self-compare
-    if (IS_INCLUDES && el != el) while (length > index) {
-      value = O[index++];
-      // eslint-disable-next-line no-self-compare
-      if (value != value) return true;
-    // Array#indexOf ignores holes, Array#includes - not
-    } else for (;length > index; index++) {
-      if ((IS_INCLUDES || index in O) && O[index] === el) return IS_INCLUDES || index || 0;
-    } return !IS_INCLUDES && -1;
-  };
-};
-
-var arrayIncludes = {
-  // `Array.prototype.includes` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.includes
-  includes: createMethod(true),
-  // `Array.prototype.indexOf` method
-  // https://tc39.github.io/ecma262/#sec-array.prototype.indexof
-  indexOf: createMethod(false)
-};
-
-var indexOf = arrayIncludes.indexOf;
-
-
-var objectKeysInternal = function (object, names) {
-  var O = toIndexedObject(object);
-  var i = 0;
-  var result = [];
-  var key;
-  for (key in O) !has(hiddenKeys, key) && has(O, key) && result.push(key);
-  // Don't enum bug & hidden keys
-  while (names.length > i) if (has(O, key = names[i++])) {
-    ~indexOf(result, key) || result.push(key);
-  }
-  return result;
-};
-
-// IE8- don't enum bug keys
-var enumBugKeys = [
-  'constructor',
-  'hasOwnProperty',
-  'isPrototypeOf',
-  'propertyIsEnumerable',
-  'toLocaleString',
-  'toString',
-  'valueOf'
-];
-
-var hiddenKeys$1 = enumBugKeys.concat('length', 'prototype');
-
-// `Object.getOwnPropertyNames` method
-// https://tc39.github.io/ecma262/#sec-object.getownpropertynames
-var f$3 = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
-  return objectKeysInternal(O, hiddenKeys$1);
-};
-
-var objectGetOwnPropertyNames = {
-	f: f$3
-};
-
-var f$4 = Object.getOwnPropertySymbols;
-
-var objectGetOwnPropertySymbols = {
-	f: f$4
-};
-
-// all object keys, includes non-enumerable and symbols
-var ownKeys = getBuiltIn('Reflect', 'ownKeys') || function ownKeys(it) {
-  var keys = objectGetOwnPropertyNames.f(anObject(it));
-  var getOwnPropertySymbols = objectGetOwnPropertySymbols.f;
-  return getOwnPropertySymbols ? keys.concat(getOwnPropertySymbols(it)) : keys;
-};
-
-var copyConstructorProperties = function (target, source) {
-  var keys = ownKeys(source);
-  var defineProperty = objectDefineProperty.f;
-  var getOwnPropertyDescriptor = objectGetOwnPropertyDescriptor.f;
-  for (var i = 0; i < keys.length; i++) {
-    var key = keys[i];
-    if (!has(target, key)) defineProperty(target, key, getOwnPropertyDescriptor(source, key));
-  }
-};
-
-var replacement = /#|\.prototype\./;
-
-var isForced = function (feature, detection) {
-  var value = data[normalize(feature)];
-  return value == POLYFILL ? true
-    : value == NATIVE ? false
-    : typeof detection == 'function' ? fails(detection)
-    : !!detection;
-};
-
-var normalize = isForced.normalize = function (string) {
-  return String(string).replace(replacement, '.').toLowerCase();
-};
-
-var data = isForced.data = {};
-var NATIVE = isForced.NATIVE = 'N';
-var POLYFILL = isForced.POLYFILL = 'P';
-
-var isForced_1 = isForced;
-
-var getOwnPropertyDescriptor$1 = objectGetOwnPropertyDescriptor.f;
-
-
-
-
-
-
-/*
-  options.target      - name of the target object
-  options.global      - target is the global object
-  options.stat        - export as static methods of target
-  options.proto       - export as prototype methods of target
-  options.real        - real prototype method for the `pure` version
-  options.forced      - export even if the native feature is available
-  options.bind        - bind methods to the target, required for the `pure` version
-  options.wrap        - wrap constructors to preventing global pollution, required for the `pure` version
-  options.unsafe      - use the simple assignment of property instead of delete + defineProperty
-  options.sham        - add a flag to not completely full polyfills
-  options.enumerable  - export as enumerable property
-  options.noTargetGet - prevent calling a getter on target
-*/
-var _export = function (options, source) {
-  var TARGET = options.target;
-  var GLOBAL = options.global;
-  var STATIC = options.stat;
-  var FORCED, target, key, targetProperty, sourceProperty, descriptor;
-  if (GLOBAL) {
-    target = global_1;
-  } else if (STATIC) {
-    target = global_1[TARGET] || setGlobal(TARGET, {});
-  } else {
-    target = (global_1[TARGET] || {}).prototype;
-  }
-  if (target) for (key in source) {
-    sourceProperty = source[key];
-    if (options.noTargetGet) {
-      descriptor = getOwnPropertyDescriptor$1(target, key);
-      targetProperty = descriptor && descriptor.value;
-    } else targetProperty = target[key];
-    FORCED = isForced_1(GLOBAL ? key : TARGET + (STATIC ? '.' : '#') + key, options.forced);
-    // contained in target
-    if (!FORCED && targetProperty !== undefined) {
-      if (typeof sourceProperty === typeof targetProperty) continue;
-      copyConstructorProperties(sourceProperty, targetProperty);
-    }
-    // add a flag to not completely full polyfills
-    if (options.sham || (targetProperty && targetProperty.sham)) {
-      createNonEnumerableProperty(sourceProperty, 'sham', true);
-    }
-    // extend global
-    redefine(target, key, sourceProperty, options);
-  }
-};
-
-var aPossiblePrototype = function (it) {
-  if (!isObject$1(it) && it !== null) {
-    throw TypeError("Can't set " + String(it) + ' as a prototype');
-  } return it;
-};
-
-// `Object.setPrototypeOf` method
-// https://tc39.github.io/ecma262/#sec-object.setprototypeof
-// Works with __proto__ only. Old v8 can't work with null proto objects.
-/* eslint-disable no-proto */
-var objectSetPrototypeOf = Object.setPrototypeOf || ('__proto__' in {} ? function () {
-  var CORRECT_SETTER = false;
-  var test = {};
-  var setter;
-  try {
-    setter = Object.getOwnPropertyDescriptor(Object.prototype, '__proto__').set;
-    setter.call(test, []);
-    CORRECT_SETTER = test instanceof Array;
-  } catch (error) { /* empty */ }
-  return function setPrototypeOf(O, proto) {
-    anObject(O);
-    aPossiblePrototype(proto);
-    if (CORRECT_SETTER) setter.call(O, proto);
-    else O.__proto__ = proto;
-    return O;
-  };
-}() : undefined);
-
-var $ = _export;
-var DESCRIPTORS = descriptors;
-var IndexedObject = indexedObject;
-var InternalStateModule = internalState;
-var anObject_1 = anObject;
-var classof = classofRaw;
-var createCommonjsModule_1 = createCommonjsModule;
-var createNonEnumerableProperty_1 = createNonEnumerableProperty;
-var createPropertyDescriptor_1 = createPropertyDescriptor;
-var definePropertyModule = objectDefineProperty;
-var documentCreateElement_1 = documentCreateElement;
-var enumBugKeys_1 = enumBugKeys;
-var fails_1 = fails;
-var getBuiltIn_1 = getBuiltIn;
-var global_2 = global_1;
-var has_1 = has;
-var hiddenKeys_1 = hiddenKeys;
-var inspectSource_1 = inspectSource;
-var internalObjectKeys = objectKeysInternal;
-var isForced_2 = isForced_1;
-var isObject_1$1 = isObject$1;
-var redefine_1 = redefine;
-var require$$0 = objectGetOwnPropertyDescriptor;
-var requireObjectCoercible_1 = requireObjectCoercible;
-var setPrototypeOf = objectSetPrototypeOf;
-var shared_1 = shared;
-var sharedKey_1 = sharedKey;
-var toInteger_1 = toInteger;
-var toLength_1 = toLength;
-var toPrimitive_1 = toPrimitive;
-var uid_1 = uid;
-
-
-var objectSetPrototypeOf414f1ee4 = {
-	$: $,
-	DESCRIPTORS: DESCRIPTORS,
-	IndexedObject: IndexedObject,
-	InternalStateModule: InternalStateModule,
-	anObject: anObject_1,
-	classof: classof,
-	createCommonjsModule: createCommonjsModule_1,
-	createNonEnumerableProperty: createNonEnumerableProperty_1,
-	createPropertyDescriptor: createPropertyDescriptor_1,
-	definePropertyModule: definePropertyModule,
-	documentCreateElement: documentCreateElement_1,
-	enumBugKeys: enumBugKeys_1,
-	fails: fails_1,
-	getBuiltIn: getBuiltIn_1,
-	global: global_2,
-	has: has_1,
-	hiddenKeys: hiddenKeys_1,
-	inspectSource: inspectSource_1,
-	internalObjectKeys: internalObjectKeys,
-	isForced: isForced_2,
-	isObject: isObject_1$1,
-	redefine: redefine_1,
-	require$$0: require$$0,
-	requireObjectCoercible: requireObjectCoercible_1,
-	setPrototypeOf: setPrototypeOf,
-	shared: shared_1,
-	sharedKey: sharedKey_1,
-	toInteger: toInteger_1,
-	toLength: toLength_1,
-	toPrimitive: toPrimitive_1,
-	uid: uid_1
-};
-
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
     var info = gen[key](arg);
@@ -2003,7 +1388,7 @@ function _defineProperty(obj, key, value) {
   return obj;
 }
 
-function ownKeys$1(object, enumerableOnly) {
+function ownKeys(object, enumerableOnly) {
   var keys = Object.keys(object);
 
   if (Object.getOwnPropertySymbols) {
@@ -2022,13 +1407,13 @@ function _objectSpread2(target) {
     var source = arguments[i] != null ? arguments[i] : {};
 
     if (i % 2) {
-      ownKeys$1(Object(source), true).forEach(function (key) {
+      ownKeys(Object(source), true).forEach(function (key) {
         _defineProperty(target, key, source[key]);
       });
     } else if (Object.getOwnPropertyDescriptors) {
       Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
     } else {
-      ownKeys$1(Object(source)).forEach(function (key) {
+      ownKeys(Object(source)).forEach(function (key) {
         Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
       });
     }
@@ -2068,7 +1453,7 @@ function _setPrototypeOf(o, p) {
   return _setPrototypeOf(o, p);
 }
 
-function isNativeReflectConstruct() {
+function _isNativeReflectConstruct() {
   if (typeof Reflect === "undefined" || !Reflect.construct) return false;
   if (Reflect.construct.sham) return false;
   if (typeof Proxy === "function") return true;
@@ -2082,7 +1467,7 @@ function isNativeReflectConstruct() {
 }
 
 function _construct(Parent, args, Class) {
-  if (isNativeReflectConstruct()) {
+  if (_isNativeReflectConstruct()) {
     _construct = Reflect.construct;
   } else {
     _construct = function _construct(Parent, args, Class) {
@@ -2152,75 +1537,74 @@ function _possibleConstructorReturn(self, call) {
   return _assertThisInitialized(self);
 }
 
+function _createSuper(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct();
+
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf(Derived),
+        result;
+
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf(this).constructor;
+
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+
+    return _possibleConstructorReturn(this, result);
+  };
+}
+
 function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
 }
 
 function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-    return arr2;
-  }
+  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
 }
 
 function _iterableToArray(iter) {
-  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+  if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
+}
+
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+
+  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+  return arr2;
 }
 
 function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance");
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 
-var _assertThisInitialized_1 = _assertThisInitialized;
-var _asyncToGenerator_1 = _asyncToGenerator;
-var _classCallCheck_1 = _classCallCheck;
-var _createClass_1 = _createClass;
-var _defineProperty_1 = _defineProperty;
-var _getPrototypeOf_1 = _getPrototypeOf;
-var _inherits_1 = _inherits;
-var _objectSpread2_1 = _objectSpread2;
-var _possibleConstructorReturn_1 = _possibleConstructorReturn;
-var _toConsumableArray_1 = _toConsumableArray;
-var _wrapNativeSuper_1 = _wrapNativeSuper;
+var BIPBOPException = /*#__PURE__*/function (_Error) {
+  _inherits(BIPBOPException, _Error);
 
-
-var _rollupPluginBabelHelpersCc605ba5 = {
-	_assertThisInitialized: _assertThisInitialized_1,
-	_asyncToGenerator: _asyncToGenerator_1,
-	_classCallCheck: _classCallCheck_1,
-	_createClass: _createClass_1,
-	_defineProperty: _defineProperty_1,
-	_getPrototypeOf: _getPrototypeOf_1,
-	_inherits: _inherits_1,
-	_objectSpread2: _objectSpread2_1,
-	_possibleConstructorReturn: _possibleConstructorReturn_1,
-	_toConsumableArray: _toConsumableArray_1,
-	_wrapNativeSuper: _wrapNativeSuper_1
-};
-
-// `Object.setPrototypeOf` method
-// https://tc39.github.io/ecma262/#sec-object.setprototypeof
-objectSetPrototypeOf414f1ee4.$({ target: 'Object', stat: true }, {
-  setPrototypeOf: objectSetPrototypeOf414f1ee4.setPrototypeOf
-});
-
-var BIPBOPException =
-/*#__PURE__*/
-function (_Error) {
-  _rollupPluginBabelHelpersCc605ba5._inherits(BIPBOPException, _Error);
+  var _super = _createSuper(BIPBOPException);
 
   function BIPBOPException(msg) {
     var _this;
 
-    _rollupPluginBabelHelpersCc605ba5._classCallCheck(this, BIPBOPException);
+    _classCallCheck(this, BIPBOPException);
 
-    _this = _rollupPluginBabelHelpersCc605ba5._possibleConstructorReturn(this, _rollupPluginBabelHelpersCc605ba5._getPrototypeOf(BIPBOPException).call(this, msg));
-    Object.setPrototypeOf(_rollupPluginBabelHelpersCc605ba5._assertThisInitialized(_this), BIPBOPException.prototype);
+    _this = _super.call(this, msg);
+    Object.setPrototypeOf(_assertThisInitialized(_this), BIPBOPException.prototype);
     return _this;
   }
 
-  _rollupPluginBabelHelpersCc605ba5._createClass(BIPBOPException, null, [{
+  _createClass(BIPBOPException, null, [{
     key: "factory",
     value: function factory(message) {
       var code = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : errorCodes.E_UNKNOWN;
@@ -2233,9 +1617,34 @@ function (_Error) {
   }]);
 
   return BIPBOPException;
-}(_rollupPluginBabelHelpersCc605ba5._wrapNativeSuper(Error));
+}( /*#__PURE__*/_wrapNativeSuper(Error));
 
-var exception = BIPBOPException;
+var BIPBOPException_1 = BIPBOPException;
+var _assertThisInitialized_1 = _assertThisInitialized;
+var _asyncToGenerator_1 = _asyncToGenerator;
+var _classCallCheck_1 = _classCallCheck;
+var _createClass_1 = _createClass;
+var _createSuper_1 = _createSuper;
+var _defineProperty_1 = _defineProperty;
+var _inherits_1 = _inherits;
+var _objectSpread2_1 = _objectSpread2;
+var _toConsumableArray_1 = _toConsumableArray;
+
+
+var exception66678d91 = {
+	BIPBOPException: BIPBOPException_1,
+	_assertThisInitialized: _assertThisInitialized_1,
+	_asyncToGenerator: _asyncToGenerator_1,
+	_classCallCheck: _classCallCheck_1,
+	_createClass: _createClass_1,
+	_createSuper: _createSuper_1,
+	_defineProperty: _defineProperty_1,
+	_inherits: _inherits_1,
+	_objectSpread2: _objectSpread2_1,
+	_toConsumableArray: _toConsumableArray_1
+};
+
+var exception_1 = exception66678d91.BIPBOPException;
 
 var PushManagerException = /** @class */ (function (_super) {
     __extends(PushManagerException, _super);
@@ -2245,7 +1654,7 @@ var PushManagerException = /** @class */ (function (_super) {
         return _this;
     }
     return PushManagerException;
-}(exception));
+}(exception_1));
 
 /**
  * Gerenciamento de PUSH da BIPBOP
